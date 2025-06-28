@@ -169,16 +169,25 @@ async def batch_analyze(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if message:
         await update.message.reply_text(message[:4000], parse_mode="Markdown")
 
+# async def main():
+#     app = ApplicationBuilder().token(BOT_TOKEN).build()
+#     app.add_handler(CommandHandler("start", start))
+#     app.add_handler(CommandHandler("analyze", analyze))
+#     app.add_handler(CommandHandler("batch", batch_analyze))
+#     await app.initialize()
+#     await app.start()
+#     print("✅ Bot is running")
+#     await app.updater.start_polling()
+#     await app.updater.idle()
+
 async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("analyze", analyze))
     app.add_handler(CommandHandler("batch", batch_analyze))
-    await app.initialize()
-    await app.start()
     print("✅ Bot is running")
-    await app.updater.start_polling()
-    await app.updater.idle()
+    await app.run_polling()
+
 
 if __name__ == "__main__":
     import asyncio
