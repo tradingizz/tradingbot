@@ -188,6 +188,23 @@ async def batch_analyze(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #     print("✅ Bot is running")
 #     await app.run_polling()
 
+# async def main():
+#     app = ApplicationBuilder().token(BOT_TOKEN).build()
+#     app.add_handler(CommandHandler("start", start))
+#     app.add_handler(CommandHandler("analyze", analyze))
+#     app.add_handler(CommandHandler("batch", batch_analyze))
+
+#     print("✅ Setting webhook...")
+#     await app.bot.set_webhook(url=WEBHOOK_URL)
+#     await app.start()
+#     await app.updater.start_webhook(
+#         listen="0.0.0.0",
+#         port=int(os.environ.get("PORT", 8080)),
+#         url_path="/webhook",
+#         webhook_url=WEBHOOK_URL,
+#     )
+#     await app.updater.idle()
+
 async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
@@ -195,7 +212,14 @@ async def main():
     app.add_handler(CommandHandler("batch", batch_analyze))
 
     print("✅ Setting webhook...")
+
+    # ✅ Must explicitly initialize before starting in webhook mode
+    await app.initialize()
+
+    # Set webhook URL
     await app.bot.set_webhook(url=WEBHOOK_URL)
+
+    # ✅ Start the app in webhook mode
     await app.start()
     await app.updater.start_webhook(
         listen="0.0.0.0",
@@ -203,6 +227,8 @@ async def main():
         url_path="/webhook",
         webhook_url=WEBHOOK_URL,
     )
+
+    # Keep the bot running
     await app.updater.idle()
 
 if __name__ == "__main__":
