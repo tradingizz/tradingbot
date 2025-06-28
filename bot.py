@@ -11,7 +11,7 @@ nest_asyncio.apply()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
-
+WEBHOOK_URL = "https://tradingbot2-onm4.onrender.com"
 FUNDAMENTAL_PROMPT = """
 Perform a detailed fundamental analysis of {stock_name} listed on {exchange} using the following real-time financial data:
 {stock_data}
@@ -180,14 +180,30 @@ async def batch_analyze(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #     await app.updater.start_polling()
 #     await app.updater.idle()
 
+# async def main():
+#     app = ApplicationBuilder().token(BOT_TOKEN).build()
+#     app.add_handler(CommandHandler("start", start))
+#     app.add_handler(CommandHandler("analyze", analyze))
+#     app.add_handler(CommandHandler("batch", batch_analyze))
+#     print("✅ Bot is running")
+#     await app.run_polling()
+
 async def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("analyze", analyze))
     app.add_handler(CommandHandler("batch", batch_analyze))
-    print("✅ Bot is running")
-    await app.run_polling()
 
+    print("✅ Setting webhook...")
+    await app.bot.set_webhook(url=WEBHOOK_URL)
+    await app.start()
+    await app.updater.start_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8080)),
+        url_path="/webhook",
+        webhook_url=WEBHOOK_URL,
+    )
+    await app.updater.idle()
 
 if __name__ == "__main__":
     import asyncio
